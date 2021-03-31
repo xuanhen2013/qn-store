@@ -13,13 +13,26 @@ const getHash = require('./util/getHash');
 
 const logPrefix = '[QiNiuStore]';
 
+const uploadUrlMap = {
+  // 华东
+  'up.qiniup.com': qn.zone.Zone_z0,
+  // 华北
+  'up-z1.qiniup.com': qn.zone.Zone_z1,
+  // 华南
+  'up-z2.qiniup.com': qn.zone.Zone_z2,
+  // 北美
+  'up-na0.qiniup.com': qn.zone.Zone_na0,
+  // 东南亚
+  'up-as0.qiniup.com': qn.zone.Zone_as0,
+}
+
 class QiNiuStore extends StorageBase {
   constructor(options) {
     super(options);
-    const { accessKey, secretKey } = options;
+    const { accessKey, secretKey, uploadURL = '' } = options;
     this.options = options;
     const config = new qn.conf.Config();
-    config.zone = qn.zone.Zone_z2;
+    config.zone = uploadUrlMap[uploadURL] || qn.zone.Zone_z2;
     this.formUploader = new qn.form_up.FormUploader(config);
     this.mac = new qn.auth.digest.Mac(accessKey, secretKey);
     this.bucketManager = new qn.rs.BucketManager(this.mac, config);
